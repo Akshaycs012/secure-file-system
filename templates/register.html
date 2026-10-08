@@ -1,0 +1,649 @@
+{% extends "base.html" %}
+
+{% block title %}Register | SecureFS{% endblock %}
+
+{% block content %}
+
+<div class="min-h-[80vh] flex items-center justify-center">
+
+    <div class="card w-full max-w-lg p-8">
+
+        <!-- HEADER -->
+
+        <div class="text-center mb-8">
+
+            <div class="text-4xl mb-3">
+                🔐
+            </div>
+
+            <h1 class="text-3xl font-bold">
+                Create SecureFS Account
+            </h1>
+
+            <p class="text-slate-400 mt-2">
+                Create your account and choose how you want to use SecureFS.
+            </p>
+
+        </div>
+
+
+        <!-- REGISTRATION FORM -->
+
+        <form id="register-form" class="space-y-5">
+
+            <!-- USERNAME -->
+
+            <div>
+
+                <label
+                    for="username"
+                    class="block text-sm text-slate-300 mb-2"
+                >
+                    Username
+                </label>
+
+                <input
+                    id="username"
+                    type="text"
+                    required
+                    minlength="3"
+                    maxlength="100"
+                    class="w-full px-4 py-3 rounded-lg
+                           bg-slate-800
+                           border border-slate-700
+                           focus:outline-none
+                           focus:border-emerald-500"
+                    placeholder="Your username"
+                >
+
+            </div>
+
+
+            <!-- EMAIL -->
+
+            <div>
+
+                <label
+                    for="register-email"
+                    class="block text-sm text-slate-300 mb-2"
+                >
+                    Email
+                </label>
+
+                <input
+                    id="register-email"
+                    type="email"
+                    required
+                    class="w-full px-4 py-3 rounded-lg
+                           bg-slate-800
+                           border border-slate-700
+                           focus:outline-none
+                           focus:border-emerald-500"
+                    placeholder="you@example.com"
+                >
+
+            </div>
+
+
+            <!-- PASSWORD -->
+
+            <div>
+
+                <label
+                    for="register-password"
+                    class="block text-sm text-slate-300 mb-2"
+                >
+                    Password
+                </label>
+
+                <input
+                    id="register-password"
+                    type="password"
+                    required
+                    minlength="8"
+                    class="w-full px-4 py-3 rounded-lg
+                           bg-slate-800
+                           border border-slate-700
+                           focus:outline-none
+                           focus:border-emerald-500"
+                    placeholder="Minimum 8 characters"
+                >
+
+            </div>
+
+
+            <!-- WORKSPACE TYPE -->
+
+            <div>
+
+                <label class="block text-sm text-slate-300 mb-3">
+                    How do you want to use SecureFS?
+                </label>
+
+                <div class="space-y-3">
+
+                    <!-- PERSONAL -->
+
+                    <label
+                        class="workspace-option flex items-start gap-3
+                               p-4 rounded-lg
+                               bg-slate-800
+                               border border-slate-700
+                               cursor-pointer
+                               hover:border-emerald-500"
+                    >
+
+                        <input
+                            type="radio"
+                            name="workspace_type"
+                            value="PERSONAL"
+                            checked
+                            class="mt-1"
+                        >
+
+                        <div>
+
+                            <p class="font-semibold">
+                                👤 Personal
+                            </p>
+
+                            <p class="text-sm text-slate-400 mt-1">
+                                Use SecureFS privately with your own
+                                personal workspace.
+                            </p>
+
+                        </div>
+
+                    </label>
+
+
+                    <!-- ORGANIZATION -->
+
+                    <label
+                        class="workspace-option flex items-start gap-3
+                               p-4 rounded-lg
+                               bg-slate-800
+                               border border-slate-700
+                               cursor-pointer
+                               hover:border-emerald-500"
+                    >
+
+                        <input
+                            type="radio"
+                            name="workspace_type"
+                            value="ORGANIZATION"
+                            class="mt-1"
+                        >
+
+                        <div>
+
+                            <p class="font-semibold">
+                                🏢 Create Organization
+                            </p>
+
+                            <p class="text-sm text-slate-400 mt-1">
+                                Create an organization and become its owner.
+                            </p>
+
+                        </div>
+
+                    </label>
+
+
+                    <!-- JOIN -->
+
+                    <label
+                        class="workspace-option flex items-start gap-3
+                               p-4 rounded-lg
+                               bg-slate-800
+                               border border-slate-700
+                               cursor-pointer
+                               hover:border-emerald-500"
+                    >
+
+                        <input
+                            type="radio"
+                            name="workspace_type"
+                            value="JOIN"
+                            class="mt-1"
+                        >
+
+                        <div>
+
+                            <p class="font-semibold">
+                                🤝 Join Organization
+                            </p>
+
+                            <p class="text-sm text-slate-400 mt-1">
+                                Join an organization using an invitation code.
+                            </p>
+
+                        </div>
+
+                    </label>
+
+                </div>
+
+            </div>
+
+
+            <!-- ORGANIZATION DETAILS -->
+
+            <div
+                id="organization-fields"
+                class="hidden space-y-4"
+            >
+
+                <div>
+
+                    <label
+                        for="organization-name"
+                        class="block text-sm text-slate-300 mb-2"
+                    >
+                        Organization Name
+                    </label>
+
+                    <input
+                        id="organization-name"
+                        type="text"
+                        maxlength="150"
+                        class="w-full px-4 py-3 rounded-lg
+                               bg-slate-800
+                               border border-slate-700
+                               focus:outline-none
+                               focus:border-emerald-500"
+                        placeholder="Example: SecureTech"
+                    >
+
+                </div>
+
+
+                <div>
+
+                    <label
+                        for="required-approvals"
+                        class="block text-sm text-slate-300 mb-2"
+                    >
+                        Required Deletion Approvals
+                    </label>
+
+                    <input
+                        id="required-approvals"
+                        type="number"
+                        min="1"
+                        value="1"
+                        class="w-full px-4 py-3 rounded-lg
+                               bg-slate-800
+                               border border-slate-700
+                               focus:outline-none
+                               focus:border-emerald-500"
+                    >
+
+                    <p class="text-xs text-slate-500 mt-1">
+                        This can be changed when more eligible approvers
+                        are added.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- INVITATION -->
+
+            <div
+                id="invitation-fields"
+                class="hidden"
+            >
+
+                <label
+                    for="invitation-code"
+                    class="block text-sm text-slate-300 mb-2"
+                >
+                    Invitation Code
+                </label>
+
+                <input
+                    id="invitation-code"
+                    type="text"
+                    class="w-full px-4 py-3 rounded-lg
+                           bg-slate-800
+                           border border-slate-700
+                           focus:outline-none
+                           focus:border-emerald-500"
+                    placeholder="Paste your invitation code"
+                >
+
+                <p class="text-xs text-slate-500 mt-1">
+                    The invitation must belong to the email address
+                    used for this account.
+                </p>
+
+            </div>
+
+
+            <!-- ERROR -->
+
+            <div
+                id="register-error"
+                class="hidden text-red-400 text-sm"
+            ></div>
+
+
+            <!-- SUCCESS -->
+
+            <div
+                id="register-success"
+                class="hidden text-emerald-400 text-sm"
+            ></div>
+
+
+            <!-- SUBMIT -->
+
+            <button
+                id="register-button"
+                type="submit"
+                class="w-full py-3 rounded-lg
+                       bg-emerald-600
+                       hover:bg-emerald-500
+                       font-semibold
+                       transition"
+            >
+                Create Account
+            </button>
+
+        </form>
+
+
+        <!-- LOGIN -->
+
+        <p class="text-center text-slate-400 mt-6">
+
+            Already have an account?
+
+            <a
+                href="/login"
+                class="text-emerald-400 hover:text-emerald-300"
+            >
+                Login
+            </a>
+
+        </p>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+
+{% block scripts %}
+
+<script>
+
+const workspaceTypeInputs =
+    document.querySelectorAll(
+        'input[name="workspace_type"]'
+    );
+
+const organizationFields =
+    document.getElementById(
+        "organization-fields"
+    );
+
+const invitationFields =
+    document.getElementById(
+        "invitation-fields"
+    );
+
+
+function updateWorkspaceFields() {
+
+    const selected =
+        document.querySelector(
+            'input[name="workspace_type"]:checked'
+        ).value;
+
+
+    organizationFields.classList.toggle(
+        "hidden",
+        selected !== "ORGANIZATION"
+    );
+
+
+    invitationFields.classList.toggle(
+        "hidden",
+        selected !== "JOIN"
+    );
+
+}
+
+
+workspaceTypeInputs.forEach(input => {
+
+    input.addEventListener(
+        "change",
+        updateWorkspaceFields
+    );
+
+});
+
+
+document
+    .getElementById("register-form")
+    .addEventListener(
+        "submit",
+        async function(event) {
+
+            event.preventDefault();
+
+            const errorElement =
+                document.getElementById(
+                    "register-error"
+                );
+
+            const successElement =
+                document.getElementById(
+                    "register-success"
+                );
+
+            errorElement.classList.add("hidden");
+            errorElement.textContent = "";
+
+            successElement.classList.add("hidden");
+            successElement.textContent = "";
+
+
+            const username =
+                document.getElementById(
+                    "username"
+                ).value.trim();
+
+
+            const email =
+                document.getElementById(
+                    "register-email"
+                ).value.trim();
+
+
+            const password =
+                document.getElementById(
+                    "register-password"
+                ).value;
+
+
+            const workspaceType =
+                document.querySelector(
+                    'input[name="workspace_type"]:checked'
+                ).value;
+
+
+            const organizationName =
+                document.getElementById(
+                    "organization-name"
+                ).value.trim();
+
+
+            const requiredApprovals =
+                parseInt(
+                    document.getElementById(
+                        "required-approvals"
+                    ).value,
+                    10
+                );
+
+
+            const invitationCode =
+                document.getElementById(
+                    "invitation-code"
+                ).value.trim();
+
+
+            if (
+                workspaceType === "ORGANIZATION" &&
+                !organizationName
+            ) {
+
+                errorElement.textContent =
+                    "Organization name is required.";
+
+                errorElement.classList.remove(
+                    "hidden"
+                );
+
+                return;
+
+            }
+
+
+            if (
+                workspaceType === "JOIN" &&
+                !invitationCode
+            ) {
+
+                errorElement.textContent =
+                    "Invitation code is required.";
+
+                errorElement.classList.remove(
+                    "hidden"
+                );
+
+                return;
+
+            }
+
+
+            const button =
+                document.getElementById(
+                    "register-button"
+                );
+
+            button.disabled = true;
+            button.textContent =
+                "Creating account...";
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        "/api/auth/register",
+                        {
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body: JSON.stringify({
+
+                                username: username,
+
+                                email: email,
+
+                                password: password,
+
+                                workspace_type:
+                                    workspaceType,
+
+                                organization_name:
+                                    organizationName,
+
+                                required_approvals:
+                                    requiredApprovals,
+
+                                invitation_code:
+                                    invitationCode
+
+                            })
+                        }
+                    );
+
+
+                const data =
+                    await response.json();
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        data.error ||
+                        "Registration failed."
+                    );
+
+                }
+
+
+                successElement.textContent =
+                    "Account created successfully. Redirecting...";
+
+                successElement.classList.remove(
+                    "hidden"
+                );
+
+
+                if (data.access_token) {
+
+                    setToken(
+                        data.access_token
+                    );
+
+                }
+
+
+                setTimeout(() => {
+
+                    window.location.href =
+                        "/dashboard";
+
+                }, 500);
+
+
+            } catch (error) {
+
+                errorElement.textContent =
+                    error.message;
+
+                errorElement.classList.remove(
+                    "hidden"
+                );
+
+            } finally {
+
+                button.disabled = false;
+
+                button.textContent =
+                    "Create Account";
+
+            }
+
+        }
+    );
+
+
+updateWorkspaceFields();
+
+</script>
+
+{% endblock %}

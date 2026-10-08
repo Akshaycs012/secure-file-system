@@ -1,0 +1,49 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Environment variables / secrets
+.env
+.env.*
+!.env.example
+
+# Cryptographic keys
+keys/*
+!keys/.gitkeep
+
+# Runtime database
+instance/*.db
+instance/*.db-*
+
+# Runtime data
+data/storage/*
+data/decrypted/*
+data/audit.json
+
+# Test/generated data
+data/*_tests/
+data/performance/
+
+# Logs
+*.log
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+# Runtime test/download files
+downloaded_*.txt
+*_test.txt
+
+# SQLite temporary files
+instance/*.db-journal
+instance/*.db-wal
+instance/*.db-shm

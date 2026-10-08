@@ -1,0 +1,2423 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard | SecureFS{% endblock %}
+
+{% block navbar %}
+
+<div class="flex items-center gap-4">
+
+    <span
+        id="username-display"
+        class="text-slate-300 text-sm"
+    >
+        Loading...
+    </span>
+
+    <button
+        onclick="logout()"
+        class="px-4 py-2 rounded-lg
+               bg-slate-800 hover:bg-slate-700
+               border border-slate-700
+               text-sm transition"
+    >
+        Logout
+    </button>
+
+</div>
+
+{% endblock %}
+
+
+{% block content %}
+
+<!-- ============================================================
+     HEADER
+     ============================================================ -->
+
+<div class="flex flex-col md:flex-row md:items-center
+            md:justify-between gap-4 mb-8">
+
+    <div>
+
+        <h1 class="text-3xl font-bold">
+            Dashboard
+        </h1>
+
+        <p class="text-slate-400 mt-1">
+            Manage your encrypted files securely.
+        </p>
+
+    </div>
+
+</div>
+
+
+<!-- ============================================================
+     WORKSPACE
+     ============================================================ -->
+
+<div class="card p-6 mb-8">
+
+    <div class="flex flex-col md:flex-row
+                md:items-center md:justify-between gap-4">
+
+        <div>
+
+            <h2 class="text-xl font-semibold">
+                Active Workspace
+            </h2>
+
+            <p
+                id="workspace-description"
+                class="text-slate-400 text-sm mt-1"
+            >
+                Loading workspaces...
+            </p>
+
+        </div>
+
+        <div class="w-full md:w-80">
+
+            <label
+                for="workspace-select"
+                class="block text-sm text-slate-400 mb-2"
+            >
+                Select Workspace
+            </label>
+
+            <select
+                id="workspace-select"
+                class="w-full px-4 py-3 rounded-lg
+                       bg-slate-800
+                       border border-slate-700
+                       text-slate-200
+                       focus:outline-none
+                       focus:border-emerald-500"
+                disabled
+            >
+
+                <option>
+                    Loading...
+                </option>
+
+            </select>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ============================================================
+     STATISTICS
+     ============================================================ -->
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+
+    <div class="card p-5">
+
+        <p class="text-slate-400 text-sm">
+            Total Files
+        </p>
+
+        <p
+            id="file-count"
+            class="text-3xl font-bold mt-2"
+        >
+            0
+        </p>
+
+    </div>
+
+
+    <div class="card p-5">
+
+        <p class="text-slate-400 text-sm">
+            Protected
+        </p>
+
+        <p
+            id="protected-count"
+            class="text-3xl font-bold text-emerald-400 mt-2"
+        >
+            0
+        </p>
+
+    </div>
+
+
+    <div class="card p-5">
+
+        <p class="text-slate-400 text-sm">
+            System
+        </p>
+
+        <p class="text-3xl font-bold text-emerald-400 mt-2">
+            Secure
+        </p>
+
+    </div>
+
+</div>
+
+
+<!-- ============================================================
+     UPLOAD
+     ============================================================ -->
+
+<div class="card p-6 mb-8">
+
+    <div class="flex items-center justify-between mb-5">
+
+        <div>
+
+            <h2 class="text-xl font-semibold">
+                Upload File
+            </h2>
+
+            <p class="text-slate-400 text-sm mt-1">
+                Your file will be encrypted before storage.
+            </p>
+
+        </div>
+
+        <span class="text-2xl">
+            🔐
+        </span>
+
+    </div>
+
+
+    <form
+        id="upload-form"
+        class="flex flex-col md:flex-row gap-4"
+    >
+
+        <input
+            id="file-input"
+            type="file"
+            required
+            class="flex-1 px-4 py-3 rounded-lg
+                   bg-slate-800
+                   border border-slate-700
+                   text-slate-300"
+        >
+
+        <button
+            id="upload-button"
+            type="submit"
+            class="px-6 py-3 rounded-lg
+                   bg-emerald-600
+                   hover:bg-emerald-500
+                   font-semibold transition
+                   disabled:opacity-50
+                   disabled:cursor-not-allowed"
+            disabled
+        >
+            Encrypt & Upload
+        </button>
+
+    </form>
+
+
+    <div
+        id="upload-message"
+        class="hidden mt-4 text-sm"
+    ></div>
+
+</div>
+
+
+<!-- ============================================================
+     FILES
+     ============================================================ -->
+
+<div class="card overflow-hidden mb-8">
+
+    <div class="p-6 border-b border-slate-800
+                flex items-center justify-between">
+
+        <div>
+
+            <h2 class="text-xl font-semibold">
+                Workspace Files
+            </h2>
+
+            <p
+                id="files-description"
+                class="text-slate-400 text-sm mt-1"
+            >
+                Select a workspace to view its files.
+            </p>
+
+        </div>
+
+
+        <button
+            onclick="refreshDashboard()"
+            class="px-4 py-2 rounded-lg
+                   bg-slate-800
+                   hover:bg-slate-700
+                   border border-slate-700
+                   text-sm"
+        >
+            Refresh
+        </button>
+
+    </div>
+
+
+    <div class="overflow-x-auto">
+
+        <table class="w-full">
+
+            <thead class="bg-slate-900">
+
+                <tr class="text-left text-slate-400 text-sm">
+
+                    <th class="px-6 py-4">
+                        File
+                    </th>
+
+                    <th class="px-6 py-4">
+                        Size
+                    </th>
+
+                    <th class="px-6 py-4">
+                        Status
+                    </th>
+
+                    <th class="px-6 py-4">
+                        Actions
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody
+                id="files-table"
+                class="divide-y divide-slate-800"
+            >
+
+                <tr>
+
+                    <td
+                        colspan="4"
+                        class="px-6 py-10
+                               text-center
+                               text-slate-500"
+                    >
+                        Loading files...
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<!-- ============================================================
+     DELETION REQUESTS
+     ============================================================ -->
+
+<div class="card overflow-hidden mb-8">
+
+    <div class="p-6 border-b border-slate-800
+                flex items-center justify-between">
+
+        <div>
+
+            <h2 class="text-xl font-semibold">
+                Deletion Requests
+            </h2>
+
+            <p class="text-slate-400 text-sm mt-1">
+                Review and manage workspace file deletion requests.
+            </p>
+
+        </div>
+
+
+        <button
+            onclick="loadDeletionRequests()"
+            class="px-4 py-2 rounded-lg
+                   bg-slate-800
+                   hover:bg-slate-700
+                   border border-slate-700
+                   text-sm"
+        >
+            Refresh
+        </button>
+
+    </div>
+
+
+    <div id="deletion-requests-container">
+
+        <div
+            class="px-6 py-10
+                   text-center
+                   text-slate-500"
+        >
+            Loading deletion requests...
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+
+{% block scripts %}
+
+<script>
+
+/* ============================================================
+   GLOBAL STATE
+   ============================================================ */
+
+let workspaces = [];
+
+let activeWorkspaceId = null;
+
+let currentFiles = [];
+
+let deletionRequests = [];
+
+
+/* ============================================================
+   PAGE INITIALIZATION
+   ============================================================ */
+
+document.addEventListener("DOMContentLoaded", async () => {
+
+    const user = await getCurrentUser();
+
+    if (!user) {
+
+        window.location.href = "/login";
+
+        return;
+    }
+
+
+    document.getElementById(
+        "username-display"
+    ).textContent = user.username;
+
+
+    document
+        .getElementById("workspace-select")
+        .addEventListener(
+            "change",
+            handleWorkspaceChange
+        );
+
+
+    document
+        .getElementById("upload-form")
+        .addEventListener(
+            "submit",
+            uploadFile
+        );
+
+
+    await loadWorkspaces();
+
+});
+
+
+/* ============================================================
+   LOAD WORKSPACES
+   ============================================================ */
+
+async function loadWorkspaces() {
+
+    const token = getToken();
+
+    if (!token) {
+
+        window.location.href = "/login";
+
+        return;
+    }
+
+
+    const select =
+        document.getElementById("workspace-select");
+
+    const uploadButton =
+        document.getElementById("upload-button");
+
+
+    try {
+
+        const response = await fetch(
+            "/api/workspaces",
+            {
+                headers: {
+                    "Authorization":
+                        `Bearer ${token}`
+                }
+            }
+        );
+
+
+        if (response.status === 401) {
+
+            removeToken();
+
+            window.location.href = "/login";
+
+            return;
+        }
+
+
+        const data = await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.error ||
+                "Unable to load workspaces."
+            );
+        }
+
+
+        workspaces = data.workspaces || [];
+
+
+        /* ----------------------------------------------------
+           NO WORKSPACES
+           ---------------------------------------------------- */
+
+        if (workspaces.length === 0) {
+
+            select.innerHTML = `
+                <option>
+                    No workspaces available
+                </option>
+            `;
+
+            select.disabled = true;
+
+            uploadButton.disabled = true;
+
+            document.getElementById(
+                "workspace-description"
+            ).textContent =
+                "You are not a member of any workspace.";
+
+            return;
+        }
+
+
+        /* ----------------------------------------------------
+           POPULATE WORKSPACE SELECTOR
+           ---------------------------------------------------- */
+
+        select.innerHTML = workspaces.map(
+            workspace => `
+                <option value="${escapeHtml(workspace.id)}">
+                    ${escapeHtml(workspace.name)}
+                    (${escapeHtml(workspace.type)})
+                </option>
+            `
+        ).join("");
+
+
+        /* ----------------------------------------------------
+           RESTORE PREVIOUS WORKSPACE
+           ---------------------------------------------------- */
+
+        const savedWorkspaceId =
+            localStorage.getItem(
+                "active_workspace_id"
+            );
+
+
+        const savedWorkspaceExists =
+            workspaces.some(
+                workspace =>
+                    workspace.id === savedWorkspaceId
+            );
+
+
+        if (savedWorkspaceExists) {
+
+            activeWorkspaceId =
+                savedWorkspaceId;
+
+        } else {
+
+            activeWorkspaceId =
+                workspaces[0].id;
+
+            localStorage.setItem(
+                "active_workspace_id",
+                activeWorkspaceId
+            );
+
+        }
+
+
+        select.value = activeWorkspaceId;
+
+        select.disabled = false;
+
+        uploadButton.disabled = false;
+
+
+        updateWorkspaceInformation();
+
+
+        await loadFiles();
+
+        await loadDeletionRequests();
+
+
+    } catch (error) {
+
+        select.innerHTML = `
+            <option>
+                Unable to load workspaces
+            </option>
+        `;
+
+        select.disabled = true;
+
+        uploadButton.disabled = true;
+
+        document.getElementById(
+            "workspace-description"
+        ).textContent =
+            error.message;
+
+    }
+
+}
+
+
+/* ============================================================
+   WORKSPACE CHANGE
+   ============================================================ */
+
+async function handleWorkspaceChange(event) {
+
+    activeWorkspaceId =
+        event.target.value;
+
+
+    localStorage.setItem(
+        "active_workspace_id",
+        activeWorkspaceId
+    );
+
+
+    document.getElementById(
+        "upload-button"
+    ).disabled = !activeWorkspaceId;
+
+
+    updateWorkspaceInformation();
+
+
+    await loadFiles();
+
+    await loadDeletionRequests();
+
+}
+
+
+/* ============================================================
+   WORKSPACE INFORMATION
+   ============================================================ */
+
+function updateWorkspaceInformation() {
+
+    const workspace =
+        workspaces.find(
+            item =>
+                item.id === activeWorkspaceId
+        );
+
+
+    if (!workspace) {
+
+        return;
+    }
+
+
+    document.getElementById(
+        "workspace-description"
+    ).textContent =
+        `${workspace.type} workspace`;
+
+
+    document.getElementById(
+        "files-description"
+    ).textContent =
+        `Encrypted files stored in ${workspace.name}.`;
+
+}
+
+
+/* ============================================================
+   LOAD FILES
+   ============================================================ */
+
+async function loadFiles() {
+
+    const token = getToken();
+
+
+    if (!token) {
+
+        window.location.href = "/login";
+
+        return;
+    }
+
+
+    if (!activeWorkspaceId) {
+
+        document.getElementById(
+            "files-table"
+        ).innerHTML = `
+            <tr>
+                <td
+                    colspan="4"
+                    class="px-6 py-10
+                           text-center
+                           text-slate-500"
+                >
+                    Select a workspace first.
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+
+    const table =
+        document.getElementById("files-table");
+
+
+    try {
+
+        const response = await fetch(
+            `/api/files?workspace_id=${
+                encodeURIComponent(
+                    activeWorkspaceId
+                )
+            }`,
+            {
+                headers: {
+                    "Authorization":
+                        `Bearer ${token}`
+                }
+            }
+        );
+
+
+        if (response.status === 401) {
+
+            removeToken();
+
+            window.location.href = "/login";
+
+            return;
+        }
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.error ||
+                "Unable to load files."
+            );
+        }
+
+
+        currentFiles =
+            data.files || [];
+
+
+        renderFiles(currentFiles);
+
+
+    } catch (error) {
+
+        currentFiles = [];
+
+
+        table.innerHTML = `
+            <tr>
+                <td
+                    colspan="4"
+                    class="px-6 py-10
+                           text-center
+                           text-red-400"
+                >
+                    ${escapeHtml(error.message)}
+                </td>
+            </tr>
+        `;
+
+    }
+
+}
+
+
+/* ============================================================
+   RENDER FILES
+   ============================================================ */
+
+function renderFiles(files) {
+
+    const table =
+        document.getElementById("files-table");
+
+
+    document.getElementById(
+        "file-count"
+    ).textContent =
+        files.length;
+
+
+    document.getElementById(
+        "protected-count"
+    ).textContent =
+        files.filter(
+            file =>
+                file.status === "PROTECTED"
+        ).length;
+
+
+    if (files.length === 0) {
+
+        table.innerHTML = `
+            <tr>
+
+                <td
+                    colspan="4"
+                    class="px-6 py-12 text-center"
+                >
+
+                    <div class="text-4xl mb-3">
+                        📁
+                    </div>
+
+                    <p class="text-slate-300">
+                        No files in this workspace
+                    </p>
+
+                    <p class="text-slate-500 text-sm mt-1">
+                        Upload your first file above.
+                    </p>
+
+                </td>
+
+            </tr>
+        `;
+
+        return;
+    }
+
+
+    table.innerHTML = files.map(
+        file => `
+
+            <tr class="hover:bg-slate-900/50">
+
+                <td class="px-6 py-4">
+
+                    <div class="font-medium">
+
+                        ${escapeHtml(
+                            file.original_name
+                        )}
+
+                    </div>
+
+                    <div class="text-xs text-slate-500 mt-1">
+
+                        ID:
+                        ${escapeHtml(file.id)}
+
+                    </div>
+
+                </td>
+
+
+                <td class="px-6 py-4 text-slate-400">
+
+                    ${formatBytes(file.size)}
+
+                </td>
+
+
+                <td class="px-6 py-4">
+
+                    <span class="status-protected">
+
+                        ●
+                        ${escapeHtml(file.status)}
+
+                    </span>
+
+                </td>
+
+
+                <td class="px-6 py-4">
+
+                    <div class="flex flex-wrap gap-2">
+
+                        <button
+                            onclick="checkIntegrity('${escapeJs(file.id)}')"
+                            class="px-3 py-2 rounded-lg
+                                   bg-slate-800
+                                   hover:bg-slate-700
+                                   text-sm"
+                        >
+                            Verify
+                        </button>
+
+
+                        <button
+                            onclick="downloadFile('${escapeJs(file.id)}')"
+                            class="px-3 py-2 rounded-lg
+                                   bg-blue-600
+                                   hover:bg-blue-500
+                                   text-sm"
+                        >
+                            Download
+                        </button>
+
+
+                        <button
+                            onclick="deleteFile('${escapeJs(file.id)}')"
+                            class="px-3 py-2 rounded-lg
+                                   bg-red-600
+                                   hover:bg-red-500
+                                   text-sm"
+                        >
+                            Delete
+                        </button>
+
+                    </div>
+
+                </td>
+
+            </tr>
+
+        `
+    ).join("");
+
+}
+
+
+/* ============================================================
+   INTEGRITY VERIFICATION
+   ============================================================ */
+
+async function checkIntegrity(fileId) {
+
+    const token = getToken();
+
+
+    if (!token) {
+
+        window.location.href = "/login";
+
+        return;
+    }
+
+
+    try {
+
+        const response = await fetch(
+            `/api/files/id/${encodeURIComponent(fileId)}/integrity?workspace_id=${
+                encodeURIComponent(
+                    activeWorkspaceId
+                )
+            }`,
+            {
+                headers: {
+                    "Authorization":
+                        `Bearer ${token}`
+                }
+            }
+        );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.error ||
+                "Integrity check failed."
+            );
+        }
+
+
+        alert(
+            `Integrity: ${data.integrity}\n\n` +
+            `File: ${data.filename}`
+        );
+
+
+    } catch (error) {
+
+        alert(error.message);
+
+    }
+
+}
+
+
+/* ============================================================
+   DOWNLOAD
+   ============================================================ */
+
+async function downloadFile(fileId) {
+
+    const token = getToken();
+
+
+    if (!token) {
+
+        window.location.href = "/login";
+
+        return;
+    }
+
+
+    try {
+
+        const response = await fetch(
+            `/api/files/id/${encodeURIComponent(fileId)}/download?workspace_id=${
+                encodeURIComponent(
+                    activeWorkspaceId
+                )
+            }`,
+            {
+                headers: {
+                    "Authorization":
+                        `Bearer ${token}`
+                }
+            }
+        );
+
+
+        if (!response.ok) {
+
+            const data =
+                await response.json();
+
+            throw new Error(
+                data.error ||
+                "Download failed."
+            );
+        }
+
+
+        const blob =
+            await response.blob();
+
+
+        const url =
+            window.URL.createObjectURL(
+                blob
+            );
+
+
+        const link =
+            document.createElement("a");
+
+
+        link.href = url;
+
+
+        const disposition =
+            response.headers.get(
+                "Content-Disposition"
+            );
+
+
+        let filename = "download";
+
+
+        if (disposition) {
+
+            const match =
+                disposition.match(
+                    /filename="?([^"]+)"?/
+                );
+
+
+            if (match) {
+
+                filename = match[1];
+
+            }
+
+        }
+
+
+        link.download = filename;
+
+
+        document.body.appendChild(link);
+
+        link.click();
+
+        link.remove();
+
+
+        window.URL.revokeObjectURL(url);
+
+
+    } catch (error) {
+
+        alert(error.message);
+
+    }
+
+}
+
+
+/* ============================================================
+   DELETE / DELETION GOVERNANCE
+   ============================================================ */
+
+async function deleteFile(fileId) {
+
+    const workspace = workspaces.find(
+        item => item.id === activeWorkspaceId
+    );
+
+
+    if (!workspace) {
+
+        alert(
+            "Please select a workspace first."
+        );
+
+        return;
+    }
+
+
+    let confirmationMessage;
+
+
+    if (workspace.type === "PERSONAL") {
+
+        confirmationMessage =
+            "Are you sure you want to permanently delete this file?";
+
+    } else {
+
+        confirmationMessage =
+            "This file belongs to an organization workspace.\n\n" +
+            "Deleting it will create a deletion request " +
+            "that follows the workspace approval policy.\n\n" +
+            "The encrypted file will remain protected until " +
+            "the request is approved and becomes executable.\n\n" +
+            "Do you want to continue?";
+
+    }
+
+
+    const confirmed =
+        confirm(confirmationMessage);
+
+
+    if (!confirmed) {
+
+        return;
+    }
+
+
+    const token = getToken();
+
+
+    if (!token) {
+
+        window.location.href = "/login";
+
+        return;
+    }
+
+
+    try {
+
+        const response = await fetch(
+            `/api/deletion-requests/files/${encodeURIComponent(fileId)}`,
+            {
+                method: "POST",
+
+                headers: {
+                    "Authorization":
+                        `Bearer ${token}`,
+
+                    "Content-Type":
+                        "application/json"
+                },
+
+                body: JSON.stringify({
+                    workspace_id:
+                        activeWorkspaceId
+                })
+            }
+        );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.error ||
+                "Unable to create deletion request."
+            );
+        }
+
+
+        /* ----------------------------------------------------
+           PERSONAL WORKSPACE
+           ---------------------------------------------------- */
+
+        if (data.type === "IMMEDIATE") {
+
+            alert(
+                data.message ||
+                "File deleted successfully."
+            );
+
+
+            await loadFiles();
+
+            await loadDeletionRequests();
+
+            return;
+        }
+
+
+        /* ----------------------------------------------------
+           ORGANIZATION WORKSPACE
+           ---------------------------------------------------- */
+
+        if (data.type === "GOVERNED") {
+
+            const deletionRequest =
+                data.request;
+
+
+            alert(
+                "Deletion request created successfully.\n\n" +
+
+                `Status: ${deletionRequest.status}\n` +
+
+                `Required approvals: ` +
+                `${deletionRequest.required_approvals}\n\n` +
+
+                "The file will remain protected until " +
+                "the request is approved and becomes " +
+                "eligible for execution."
+            );
+
+
+            await loadFiles();
+
+            await loadDeletionRequests();
+
+            return;
+        }
+
+
+        alert(
+            data.message ||
+            "Deletion request processed."
+        );
+
+
+        await loadDeletionRequests();
+
+
+    } catch (error) {
+
+        alert(
+            error.message ||
+            "Unable to process deletion request."
+        );
+
+    }
+
+}
+
+
+/* ============================================================
+   LOAD DELETION REQUESTS
+   ============================================================ */
+
+async function loadDeletionRequests() {
+
+    const container =
+        document.getElementById(
+            "deletion-requests-container"
+        );
+
+
+    const token = getToken();
+
+
+    if (!token) {
+
+        window.location.href = "/login";
+
+        return;
+    }
+
+
+    try {
+
+        const response = await fetch(
+            "/api/deletion-requests",
+            {
+                headers: {
+                    "Authorization":
+                        `Bearer ${token}`
+                }
+            }
+        );
+
+
+        if (response.status === 401) {
+
+            removeToken();
+
+            window.location.href = "/login";
+
+            return;
+        }
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.error ||
+                "Unable to load deletion requests."
+            );
+        }
+
+
+        deletionRequests =
+            data.requests || [];
+
+
+        renderDeletionRequests(
+            deletionRequests
+        );
+
+
+    } catch (error) {
+
+        container.innerHTML = `
+            <div class="px-6 py-10
+                        text-center
+                        text-red-400">
+
+                ${escapeHtml(error.message)}
+
+            </div>
+        `;
+
+    }
+
+}
+
+
+/* ============================================================
+   RENDER DELETION REQUESTS
+   ============================================================ */
+
+function renderDeletionRequests(requests) {
+
+    const container =
+        document.getElementById(
+            "deletion-requests-container"
+        );
+
+
+    /*
+     * Only display requests relevant to the
+     * currently selected workspace.
+     */
+
+    const workspaceRequests =
+        requests.filter(
+            request =>
+                request.workspace_id ===
+                activeWorkspaceId
+        );
+
+
+    if (workspaceRequests.length === 0) {
+
+        container.innerHTML = `
+            <div class="px-6 py-12 text-center">
+
+                <div class="text-4xl mb-3">
+                    ✓
+                </div>
+
+                <p class="text-slate-300">
+                    No deletion requests
+                </p>
+
+                <p class="text-slate-500 text-sm mt-1">
+                    This workspace has no active deletion requests.
+                </p>
+
+            </div>
+        `;
+
+        return;
+    }
+
+
+    container.innerHTML =
+        workspaceRequests.map(
+            request =>
+                renderDeletionRequest(
+                    request
+                )
+        ).join("");
+
+}
+
+
+/* ============================================================
+   RENDER ONE DELETION REQUEST
+   ============================================================ */
+
+function renderDeletionRequest(request) {
+
+    const file =
+        currentFiles.find(
+            item =>
+                item.id === request.file_id
+        );
+
+
+    const filename =
+        file
+            ? file.original_name
+            : request.file_id;
+
+
+    const status =
+        request.status || "UNKNOWN";
+
+
+    const approvalCount =
+        Number(
+            request.approval_count || 0
+        );
+
+
+    const requiredApprovals =
+        Number(
+            request.required_approvals || 0
+        );
+
+
+    const rejectionCount =
+        Number(
+            request.rejection_count || 0
+        );
+
+
+    const approvalText =
+        `${approvalCount} / ${requiredApprovals}`;
+
+
+    const statusClass =
+        getDeletionStatusClass(status);
+
+
+    const requestedAt =
+        formatDateTime(
+            request.requested_at
+        );
+
+
+    const executeAfter =
+        formatDateTime(
+            request.execute_after
+        );
+
+
+    let actionButtons = "";
+
+
+    /* --------------------------------------------------------
+       PENDING
+       -------------------------------------------------------- */
+
+    if (status === "PENDING") {
+
+        actionButtons = `
+
+            <button
+                onclick="approveDeletionRequest('${escapeJs(request.id)}')"
+                class="px-4 py-2 rounded-lg
+                       bg-emerald-600
+                       hover:bg-emerald-500
+                       text-sm font-medium"
+            >
+                Approve
+            </button>
+
+
+            <button
+                onclick="rejectDeletionRequest('${escapeJs(request.id)}')"
+                class="px-4 py-2 rounded-lg
+                       bg-red-600
+                       hover:bg-red-500
+                       text-sm font-medium"
+            >
+                Reject
+            </button>
+
+        `;
+
+    }
+
+
+    /* --------------------------------------------------------
+       APPROVED
+       -------------------------------------------------------- */
+
+    else if (status === "APPROVED") {
+
+        actionButtons = `
+
+            <button
+                onclick="executeDeletionRequest('${escapeJs(request.id)}')"
+                class="px-4 py-2 rounded-lg
+                       bg-amber-600
+                       hover:bg-amber-500
+                       text-sm font-medium"
+            >
+                Execute Deletion
+            </button>
+
+        `;
+
+    }
+
+
+    /* --------------------------------------------------------
+       COMPLETED
+       -------------------------------------------------------- */
+
+    else if (status === "COMPLETED") {
+
+        actionButtons = `
+
+            <span
+                class="px-4 py-2 rounded-lg
+                       bg-emerald-900/40
+                       text-emerald-400
+                       text-sm"
+            >
+                Deletion Completed
+            </span>
+
+        `;
+
+    }
+
+
+    return `
+
+        <div
+            class="p-6 border-b border-slate-800
+                   last:border-b-0"
+        >
+
+            <div
+                class="flex flex-col
+                       lg:flex-row
+                       lg:items-start
+                       lg:justify-between
+                       gap-5"
+            >
+
+                <!-- REQUEST INFORMATION -->
+
+                <div class="flex-1">
+
+                    <div
+                        class="flex flex-wrap
+                               items-center gap-3 mb-3"
+                    >
+
+                        <h3
+                            class="font-semibold
+                                   text-slate-200"
+                        >
+                            ${escapeHtml(filename)}
+                        </h3>
+
+
+                        <span
+                            class="${statusClass}"
+                        >
+                            ${escapeHtml(status)}
+                        </span>
+
+                    </div>
+
+
+                    <div
+                        class="grid grid-cols-1
+                               md:grid-cols-2
+                               gap-3
+                               text-sm"
+                    >
+
+                        <div>
+
+                            <span
+                                class="text-slate-500"
+                            >
+                                Request ID
+                            </span>
+
+                            <div
+                                class="text-slate-300
+                                       break-all"
+                            >
+                                ${escapeHtml(request.id)}
+                            </div>
+
+                        </div>
+
+
+                        <div>
+
+                            <span
+                                class="text-slate-500"
+                            >
+                                Approvals
+                            </span>
+
+                            <div
+                                class="text-slate-300"
+                            >
+                                ${approvalText}
+                            </div>
+
+                        </div>
+
+
+                        <div>
+
+                            <span
+                                class="text-slate-500"
+                            >
+                                Rejections
+                            </span>
+
+                            <div
+                                class="text-slate-300"
+                            >
+                                ${rejectionCount}
+                            </div>
+
+                        </div>
+
+
+                        <div>
+
+                            <span
+                                class="text-slate-500"
+                            >
+                                Requested
+                            </span>
+
+                            <div
+                                class="text-slate-300"
+                            >
+                                ${escapeHtml(requestedAt)}
+                            </div>
+
+                        </div>
+
+
+                        <div>
+
+                            <span
+                                class="text-slate-500"
+                            >
+                                Execute After
+                            </span>
+
+                            <div
+                                class="text-slate-300"
+                            >
+                                ${escapeHtml(executeAfter)}
+                            </div>
+
+                        </div>
+
+
+                        <div>
+
+                            <span
+                                class="text-slate-500"
+                            >
+                                File ID
+                            </span>
+
+                            <div
+                                class="text-slate-300
+                                       break-all"
+                            >
+                                ${escapeHtml(request.file_id)}
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ACTIONS -->
+
+                <div
+                    class="flex flex-wrap
+                           gap-2
+                           lg:min-w-[220px]
+                           lg:justify-end"
+                >
+
+                    ${actionButtons}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    `;
+
+}
+
+
+/* ============================================================
+   APPROVE DELETION REQUEST
+   ============================================================ */
+
+async function approveDeletionRequest(requestId) {
+
+    const confirmed =
+        confirm(
+            "Approve this deletion request?"
+        );
+
+
+    if (!confirmed) {
+
+        return;
+    }
+
+
+    const token = getToken();
+
+
+    if (!token) {
+
+        window.location.href = "/login";
+
+        return;
+    }
+
+
+    try {
+
+        const response = await fetch(
+            `/api/deletion-requests/${encodeURIComponent(requestId)}/approve`,
+            {
+                method: "POST",
+
+                headers: {
+                    "Authorization":
+                        `Bearer ${token}`,
+
+                    "Content-Type":
+                        "application/json"
+                },
+
+                body: JSON.stringify({
+                    comment:
+                        "Approved from dashboard."
+                })
+            }
+        );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.error ||
+                "Unable to approve deletion request."
+            );
+        }
+
+
+        alert(
+            data.message ||
+            "Deletion request approved."
+        );
+
+
+        await loadDeletionRequests();
+
+
+    } catch (error) {
+
+        alert(error.message);
+
+    }
+
+}
+
+
+/* ============================================================
+   REJECT DELETION REQUEST
+   ============================================================ */
+
+async function rejectDeletionRequest(requestId) {
+
+    const comment =
+        prompt(
+            "Optional rejection reason:"
+        );
+
+
+    if (comment === null) {
+
+        return;
+    }
+
+
+    const confirmed =
+        confirm(
+            "Reject this deletion request?"
+        );
+
+
+    if (!confirmed) {
+
+        return;
+    }
+
+
+    const token = getToken();
+
+
+    if (!token) {
+
+        window.location.href = "/login";
+
+        return;
+    }
+
+
+    try {
+
+        const response = await fetch(
+            `/api/deletion-requests/${encodeURIComponent(requestId)}/reject`,
+            {
+                method: "POST",
+
+                headers: {
+                    "Authorization":
+                        `Bearer ${token}`,
+
+                    "Content-Type":
+                        "application/json"
+                },
+
+                body: JSON.stringify({
+                    comment:
+                        comment || null
+                })
+            }
+        );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.error ||
+                "Unable to reject deletion request."
+            );
+        }
+
+
+        alert(
+            data.message ||
+            "Deletion request rejected."
+        );
+
+
+        await loadDeletionRequests();
+
+
+    } catch (error) {
+
+        alert(error.message);
+
+    }
+
+}
+
+
+/* ============================================================
+   EXECUTE DELETION REQUEST
+   ============================================================ */
+
+async function executeDeletionRequest(requestId) {
+
+    const confirmed =
+        confirm(
+            "Execute this deletion request?\n\n" +
+            "The encrypted file will be permanently removed."
+        );
+
+
+    if (!confirmed) {
+
+        return;
+    }
+
+
+    const token = getToken();
+
+
+    if (!token) {
+
+        window.location.href = "/login";
+
+        return;
+    }
+
+
+    try {
+
+        const response = await fetch(
+            `/api/deletion-requests/${encodeURIComponent(requestId)}/execute`,
+            {
+                method: "POST",
+
+                headers: {
+                    "Authorization":
+                        `Bearer ${token}`,
+
+                    "Content-Type":
+                        "application/json"
+                }
+            }
+        );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.error ||
+                "Unable to execute deletion request."
+            );
+        }
+
+
+        alert(
+            data.message ||
+            "Deletion request executed successfully."
+        );
+
+
+        await loadFiles();
+
+        await loadDeletionRequests();
+
+
+    } catch (error) {
+
+        alert(error.message);
+
+    }
+
+}
+
+
+/* ============================================================
+   UPLOAD
+   ============================================================ */
+
+async function uploadFile(event) {
+
+    event.preventDefault();
+
+
+    const input =
+        document.getElementById(
+            "file-input"
+        );
+
+
+    const message =
+        document.getElementById(
+            "upload-message"
+        );
+
+
+    const uploadButton =
+        document.getElementById(
+            "upload-button"
+        );
+
+
+    /* --------------------------------------------------------
+       VALIDATE WORKSPACE
+       -------------------------------------------------------- */
+
+    if (!activeWorkspaceId) {
+
+        message.className =
+            "mt-4 text-sm text-red-400";
+
+        message.textContent =
+            "Please select a workspace first.";
+
+        return;
+    }
+
+
+    /* --------------------------------------------------------
+       VALIDATE FILE
+       -------------------------------------------------------- */
+
+    if (!input.files.length) {
+
+        message.className =
+            "mt-4 text-sm text-red-400";
+
+        message.textContent =
+            "Please select a file.";
+
+        return;
+    }
+
+
+    const formData =
+        new FormData();
+
+
+    formData.append(
+        "file",
+        input.files[0]
+    );
+
+
+    const token = getToken();
+
+
+    if (!token) {
+
+        window.location.href = "/login";
+
+        return;
+    }
+
+
+    message.className =
+        "mt-4 text-sm text-slate-400";
+
+    message.textContent =
+        "Encrypting and uploading...";
+
+
+    uploadButton.disabled = true;
+
+
+    try {
+
+        const response = await fetch(
+            `/api/files/upload?workspace_id=${
+                encodeURIComponent(
+                    activeWorkspaceId
+                )
+            }`,
+            {
+                method: "POST",
+
+                headers: {
+                    "Authorization":
+                        `Bearer ${token}`
+                },
+
+                /*
+                 * Do NOT manually set Content-Type.
+                 * Browser creates multipart/form-data boundary.
+                 */
+
+                body: formData
+            }
+        );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.error ||
+                "Upload failed."
+            );
+        }
+
+
+        message.className =
+            "mt-4 text-sm text-emerald-400";
+
+        message.textContent =
+            "File encrypted and uploaded successfully.";
+
+
+        input.value = "";
+
+
+        await loadFiles();
+
+
+    } catch (error) {
+
+        message.className =
+            "mt-4 text-sm text-red-400";
+
+        message.textContent =
+            error.message;
+
+
+    } finally {
+
+        uploadButton.disabled =
+            !activeWorkspaceId;
+
+    }
+
+}
+
+
+/* ============================================================
+   REFRESH DASHBOARD
+   ============================================================ */
+
+async function refreshDashboard() {
+
+    await loadFiles();
+
+    await loadDeletionRequests();
+
+}
+
+
+/* ============================================================
+   DELETION STATUS CSS CLASSES
+   ============================================================ */
+
+function getDeletionStatusClass(status) {
+
+    switch (status) {
+
+        case "PENDING":
+
+            return `
+                inline-flex
+                items-center
+                px-2.5
+                py-1
+                rounded-full
+                text-xs
+                font-medium
+                bg-yellow-900/40
+                text-yellow-400
+            `;
+
+
+        case "APPROVED":
+
+            return `
+                inline-flex
+                items-center
+                px-2.5
+                py-1
+                rounded-full
+                text-xs
+                font-medium
+                bg-blue-900/40
+                text-blue-400
+            `;
+
+
+        case "REJECTED":
+
+            return `
+                inline-flex
+                items-center
+                px-2.5
+                py-1
+                rounded-full
+                text-xs
+                font-medium
+                bg-red-900/40
+                text-red-400
+            `;
+
+
+        case "COMPLETED":
+
+            return `
+                inline-flex
+                items-center
+                px-2.5
+                py-1
+                rounded-full
+                text-xs
+                font-medium
+                bg-emerald-900/40
+                text-emerald-400
+            `;
+
+
+        case "FAILED":
+
+            return `
+                inline-flex
+                items-center
+                px-2.5
+                py-1
+                rounded-full
+                text-xs
+                font-medium
+                bg-red-900/40
+                text-red-400
+            `;
+
+
+        default:
+
+            return `
+                inline-flex
+                items-center
+                px-2.5
+                py-1
+                rounded-full
+                text-xs
+                font-medium
+                bg-slate-800
+                text-slate-400
+            `;
+
+    }
+
+}
+
+
+/* ============================================================
+   FORMAT DATE/TIME
+   ============================================================ */
+
+function formatDateTime(value) {
+
+    if (!value) {
+
+        return "Not available";
+
+    }
+
+
+    const date =
+        new Date(value);
+
+
+    if (Number.isNaN(date.getTime())) {
+
+        return value;
+
+    }
+
+
+    return date.toLocaleString();
+
+}
+
+
+/* ============================================================
+   FORMAT FILE SIZE
+   ============================================================ */
+
+function formatBytes(bytes) {
+
+    if (
+        bytes === null ||
+        bytes === undefined ||
+        Number.isNaN(Number(bytes))
+    ) {
+
+        return "Unknown";
+
+    }
+
+
+    bytes = Number(bytes);
+
+
+    if (bytes === 0) {
+
+        return "0 Bytes";
+
+    }
+
+
+    const units = [
+        "Bytes",
+        "KB",
+        "MB",
+        "GB",
+        "TB"
+    ];
+
+
+    const index =
+        Math.floor(
+            Math.log(bytes) /
+            Math.log(1024)
+        );
+
+
+    const safeIndex =
+        Math.min(
+            index,
+            units.length - 1
+        );
+
+
+    return (
+        parseFloat(
+            (
+                bytes /
+                Math.pow(
+                    1024,
+                    safeIndex
+                )
+            ).toFixed(2)
+        )
+        + " "
+        + units[safeIndex]
+    );
+
+}
+
+
+/* ============================================================
+   HTML ESCAPE
+   ============================================================ */
+
+function escapeHtml(value) {
+
+    if (
+        value === null ||
+        value === undefined
+    ) {
+
+        return "";
+
+    }
+
+
+    const div =
+        document.createElement("div");
+
+
+    div.textContent =
+        String(value);
+
+
+    return div.innerHTML;
+
+}
+
+
+/* ============================================================
+   JAVASCRIPT STRING ESCAPE
+   ============================================================ */
+
+function escapeJs(value) {
+
+    return String(value)
+        .replace(/\\/g, "\\\\")
+        .replace(/'/g, "\\'")
+        .replace(/"/g, '\\"')
+        .replace(/\r/g, "\\r")
+        .replace(/\n/g, "\\n");
+
+}
+
+</script>
+
+{% endblock %}
